@@ -1,0 +1,63 @@
+<html>
+<head>
+<title>sylvester</title>
+	<script src="/sylvester/sylv.js"></script>
+	<script src="/sylvester/ui/ui.js"></script>
+	<script src="/sylvester/process/process.js"></script>
+	<script src="/sylvester/estim/estim.js"></script>
+	<script type="text/javascript">
+		function appendOptionLast(obj) {
+			var elOptNew = document.createElement('option');
+			elOptNew.text = obj.name;
+			elOptNew.value = obj;
+			var slt = document.getElementById("selectMatrix");
+			try {
+				slt.add(elOptNew, null); // standards compliant; doesn't work in IE
+			}
+			catch(ex) {
+				slt.add(elOptNew); // IE only
+			}
+		};
+		function selectMtx() {
+			var slt = document.getElementById("selectMatrix");
+			alert(slt.options[slt.selectedIndex].value);
+			appendOptionLast("qezofij");
+		};
+		function exportAll() {
+			document.getElementById("consoleIn").value = sylv.ui.extractAll();
+		};
+		sylv.ui.print = function(val) {
+			var txt = typeof(val)=="string"?val:val.toString();
+			var cnsl = document.getElementById("consoleOut");
+			cnsl.innerHTML=txt.replace(/\n/g,"<br/>")+"<br/>"+cnsl.innerHTML; 
+		};
+		print = sylv.ui.print;
+		function execute() {
+			var cmd = document.getElementById("consoleIn");
+			print(eval(cmd.value));
+			print("---------------");
+			cmd.value = "";
+		}
+	</script> 
+</head>
+<body>
+	<h1>sylv finance</h1>
+	<select name="selectMatrix" id="selectMatrix">
+	</select>
+	<button type="button" onclick="javascript: selectMtx()">
+		select
+	</button>
+	<button type="button" onclick="javascript: exportAll()">
+		export
+	</button>
+	<br/>
+	<textarea name="consoleIn" id="consoleIn" rows="10" cols="50"></textarea>
+	<br/>
+	<button type="button" onclick="javascript: execute()">
+		execute
+	</button> 
+	<div name="consoleOut" id="consoleOut">
+		Wellcome in Sylvester
+	</div>
+</body>
+</html>
