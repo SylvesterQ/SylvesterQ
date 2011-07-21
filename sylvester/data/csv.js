@@ -1,4 +1,4 @@
-// Copyright 2011 Florian Pons (florian.pons@gmail.com). All Rights Reserved.
+// Copyright 2011 Florian Pons (florian.pons.tv). All Rights Reserved.
 //
 // Licensed under the Cecill License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
