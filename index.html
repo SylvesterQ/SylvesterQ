@@ -15,64 +15,95 @@ limitations under the License.
 -->
 <html>
 <head>
-<title>sylvester</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>sylvester</title>
 	<script src="./sylvester/sylv.js"></script>
 	<script src="./sylvester/ui/ui.js"></script>
 	<script src="./sylvester/process/process.js"></script>
 	<script src="./sylvester/estim/estim.js"></script>
+	<script src="./flot/jquery.min.js"></script>
+	<script src="./flot/jquery.flot.js"></script>
 	<script type="text/javascript">
-		function appendOptionLast(obj) {
-			var elOptNew = document.createElement('option');
-			elOptNew.text = obj.name;
-			elOptNew.value = obj;
-			var slt = document.getElementById("selectMatrix");
-			try {
-				slt.add(elOptNew, null); // standards compliant; doesn't work in IE
-			}
-			catch(ex) {
-				slt.add(elOptNew); // IE only
-			}
-		};
-		function selectMtx() {
-			var slt = document.getElementById("selectMatrix");
-			alert(slt.options[slt.selectedIndex].value);
-			appendOptionLast("qezofij");
-		};
 		function exportAll() {
 			document.getElementById("consoleIn").value = sylv.ui.extractAll();
 		};
-		sylv.ui.print = function(val) {
+		sylv.ui.print = function(val, nl) {
 			var txt = val?val.toString():"";
-			var cnsl = document.getElementById("consoleOut");
-			cnsl.innerHTML=txt.replace(/\n/g,"<br/>")+cnsl.innerHTML; 
+			var cnsl = document.getElementById("consoleOut"+print.nb);
+			cnsl.innerHTML=txt.replace(/\n/g,"<br/>")+(nl?"<br/>":"")+cnsl.innerHTML; 
 		};
-		print = sylv.ui.print;
+		function print(val) {sylv.ui.print(val, true)};
+		print.nb = 0;
 		function execute() {
 			var cmd = document.getElementById("consoleIn");
-			print(eval(cmd.value));
-			print("<hr/>");
+			sylv.ui.print("<hr/>", false);
+			$("#consoleOut"+print.nb).before('<div id="consoleOut'+(++print.nb)+'"></div>');
+			if(cmd.value) print(eval(cmd.value));
+			historyNav.buff[historyNav.buff.length-1]=cmd.value;
 			cmd.value = "";
-		}
+			historyNav.buff.push("");
+			historyNav.pos = historyNav.buff.length-1;
+		};
+		function historyNav(e) {
+			switch(e.keyCode) {
+				case 38:
+					var cmd = document.getElementById("consoleIn");
+					if(historyNav.pos==historyNav.buff.length-1) historyNav.buff[historyNav.pos]=cmd.value;
+					historyNav.pos--;
+					if(historyNav.pos<0) historyNav.pos=0;
+					cmd.value = historyNav.buff[historyNav.pos];
+					break;
+				case 40:
+					var cmd = document.getElementById("consoleIn");
+					historyNav.pos++;
+					if(historyNav.pos>historyNav.buff.length-1) historyNav.pos=historyNav.buff.length-1;
+					cmd.value = historyNav.buff[historyNav.pos];
+					break;
+			};
+		};
+		historyNav.pos = 0;
+		historyNav.buff = [""];
+		function plot() {
+			var cmd = document.getElementById("consoleIn");
+			sylv.ui.print("<hr/>", false);
+			$("#consoleOut"+print.nb).before('<div id="consoleOut'+(++print.nb)+'" style="width:600px;height:300px;"></div>');
+			var mtx = eval(cmd.value);
+			historyNav.buff[historyNav.buff.length-1]=cmd.value;
+			cmd.value = "";
+			historyNav.buff.push("");
+			historyNav.pos = historyNav.buff.length-1;
+			
+			var cnsl = document.getElementById("consoleOut"+print.nb);
+			//cnsl.innerHTML = '<div name="placeholder'+plot.nb+'" id="placeholder'+plot.nb+'" style="width:600px;height:300px;"><div/>'+cnsl.innerHTML; 
+			var data = [];
+			var size = mtx[0].length;
+			for (var i = 1; i<mtx.length; i++) {
+				var ligne = [];
+				for (var j = 0; j<size; j++) {
+					ligne.push([mtx[0][j],mtx[i][j]]);
+				};
+				data.push(ligne);
+			};
+			$.plot($("#consoleOut"+print.nb), data);
+			$("#consoleOut"+print.nb).before('<div id="consoleOut'+(++print.nb)+'"></div>');
+		};
 	</script> 
 </head>
 <body>
 	<h1>sylv finance</h1>
-	<select name="selectMatrix" id="selectMatrix">
-	</select>
-	<button type="button" onclick="javascript: selectMtx()">
-		select
-	</button>
 	<button type="button" onclick="javascript: exportAll()">
 		export
 	</button>
 	<br/>
-	<textarea name="consoleIn" id="consoleIn" rows="10" cols="50"></textarea>
+	<textarea name="consoleIn" id="consoleIn" onKeyDown="javascript: historyNav(event)" rows="10" cols="50"></textarea>
 	<br/>
 	<button type="button" onclick="javascript: execute()">
 		execute
-	</button> 
-	<div name="consoleOut" id="consoleOut">
-		<hr/>
+	</button>
+	<button type="button" onclick="javascript: plot()">
+		plot
+	</button>
+	<div id="consoleOut0">
 		Wellcome in Sylvester
 	</div>
 </body>

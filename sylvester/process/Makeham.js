@@ -13,12 +13,32 @@
 // limitations under the License.
 
 /**
- * @fileoverview Class for representing matrices and static helper functions.
+ * @fileoverview Class representant un processus de Makeham.
  *
  *
  */
 
-sylv.loadFile("estim/Kaplan-Meier.js");
-sylv.loadFile("estim/GoldenSection.js");
-sylv.loadFile("estim/BFGS.js");
-sylv.loadFile("estim/Makeham.js");
+/**
+ * Class to generate Gaussian random number
+ *
+ * @param {float} a average
+ * @param {float} d standard deviation
+ * @constructor
+ */
+function Makeham(c, g, s) {
+  this.c = c;
+  this.g = g;
+	this.s = s;
+};
+
+Makeham.prototype.serie = function(size, x0, l0) {
+  var k = l0/Math.pow(this.g, Math.pow(this.c,x0));
+  for (var i = 1; i<size; i++) {
+    res[i] = k*Math.pow(this.s,i)*Math.pow(this.g, Math.pow(this.c,i+x0)) ;
+  };
+	return res;
+};
+
+Makeham.prototype.toString = function() {
+	return this.c+","+this.g+","+this.s;
+};

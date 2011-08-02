@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Class for representing matrices and static helper functions.
+ * @fileoverview Classe d'implementation de la méthode Broyden-Fletcher-Goldfarb-Shanno.
  *
  *
  */
@@ -26,33 +26,26 @@
  * @param {array[integer]} date des morts ordonné par ordre decroissant
  * @constructor
  */
-function KaplanMeier(N, C, T) {
-  this.S = [];
-	this.Var = [];
-	var s = 1, sVar = 0, n = N;
-	var end = Math.max(C[0]==undefined?0:C[0], T[0]==undefined?0:T[0]);
-  for (var i = 0; i<=end; i++) {
-		var k;
-		//calcul de d(i)
-		var d = 0;
-		while ((k=T.pop())==i) {
-			d++;
-		};
-		if(k!=undefined) T.push(k);
-		s *= n==0?1:(1-d/n);
-		sVar += n==0?0:(d/(n*(n-d)));
-		this.S[i] = s;
-		this.Var[i] = s*s*sVar;
-		//calcul de n(i+1)
-		n -= d;
-		while ((k=C.pop())==i) {
-			n--;
-		};
-		if(k!=undefined) C.push(k);
-	}
+function BTFS(Delta, x0) {
+  this.D = Delta;
+	this.x = x0;
+	this.B = Matrix.I(Delta(x0).length);
+	this.mu = 0.9;
 };
 
 // Returns a string representation of the matrix
-KaplanMeier.prototype.toString = function() {
-	return "["+this.S.toString()+"]";
+KaplanMeier.prototype.nextStep = function() {
+	var that = this;
+	var p = this.B.x(this.D(this.x)).scalarMultiply(-1);
+	var S;
+	var X;
+	var gs = new GoldenSection(0, 5, function(a) {return that.f(X=that.x.add(S=p.scalarMultiply(a)))});
+	var fx = this.f(this.x);
+	var df = this.D(this.x);
+	var d = this.mu*df.x(p);
+	while (gs.nextStep() > fx+gs.a*d);
+	var Y = this.D(X).subtract(df);
+	var sy = S.transpose().x(Y);
+	this.B = this.B.add(S.scalarMultiply((sy+Y.transpose().x(this.B).x(S))/(sy*sy)).x(S.transpose())).subtract(this.B.x(S).x(Y.transpose()).add(S.x(Y.transpose().x(this.B))).scalarMultiply(sy));
+	return 0;
 };

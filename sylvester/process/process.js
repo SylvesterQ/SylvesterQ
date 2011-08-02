@@ -17,4 +17,5 @@
  *
  */
 
-sylv.loadFile("process/black-scholes.js");
+sylv.loadFile("process/Black-Scholes.js");
+sylv.loadFile("process/Makeham.js");

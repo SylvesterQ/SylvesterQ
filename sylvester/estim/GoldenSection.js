@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Class for representing matrices and static helper functions.
+ * @fileoverview Classe d'implementation de la méthode Golden Section de recherche de minimal.
  *
  *
  */
@@ -26,33 +26,27 @@
  * @param {array[integer]} date des morts ordonné par ordre decroissant
  * @constructor
  */
-function KaplanMeier(N, C, T) {
-  this.S = [];
-	this.Var = [];
-	var s = 1, sVar = 0, n = N;
-	var end = Math.max(C[0]==undefined?0:C[0], T[0]==undefined?0:T[0]);
-  for (var i = 0; i<=end; i++) {
-		var k;
-		//calcul de d(i)
-		var d = 0;
-		while ((k=T.pop())==i) {
-			d++;
-		};
-		if(k!=undefined) T.push(k);
-		s *= n==0?1:(1-d/n);
-		sVar += n==0?0:(d/(n*(n-d)));
-		this.S[i] = s;
-		this.Var[i] = s*s*sVar;
-		//calcul de n(i+1)
-		n -= d;
-		while ((k=C.pop())==i) {
-			n--;
-		};
-		if(k!=undefined) C.push(k);
-	}
+function GoldenSection(x0, x1, fct) {
+  this.f = fct;
+	this.x0 = x0;
+	this.x1 = x1;
+	this.phi = (1+Maht.sqrt(5))/2;
+	this.x2 = x0+(x1-x0)/(1+this.phi);
+	this.a = this.x2
+	this.fa = fct(this.a);
 };
 
-// Returns a string representation of the matrix
-KaplanMeier.prototype.toString = function() {
-	return "["+this.S.toString()+"]";
+// Calculate the next step and return the value of the function at the new point.
+GoldenSection.prototype.nextStep = function() {
+	var x = this.x2+this.phi*(this.x2-this.x1);
+	var fa = this.f(x);
+	if(fa<this.fa) {
+		this.fa = fa;
+		this.a = x;
+		this.x0 = this.x2;
+		this.x2 = x;
+	} else {
+		this.x1 = x;
+	};
+	return this.fa;
 };
