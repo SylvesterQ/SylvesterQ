@@ -41,7 +41,7 @@
  */
 
 function Matrix(m) {
-	if(m.constructor.name=="Matrix") {
+	if(m instanceof Matrix) {
 		this.setElements(m.elements);
 	} else {
 		this.elements = m;
@@ -178,9 +178,10 @@ Matrix.prototype.multiply = function(matrix) {
 	return (i==0 && j==0) ? M.elements[0][0] : M;
 };
 
-Matrix.prototype.x = function(matrix) { return this.multiply(matrix); };
-
 Matrix.prototype.scalarMultiply = function(s) { return new Matrix(this.map(function(x,i,j) {return s*x})); };
+
+Matrix.prototype.x = function(mtx) { return typeof(mtx)=="number"?this.scalarMultiply(mtx):this.multiply(mtx); };
+
 
 
 // Returns a submatrix taken from the matrix
@@ -460,4 +461,12 @@ Matrix.Zero = function(n, m) {
 		} while (--nj);
 	} while (--ni);
 	return new Matrix(els);
+};
+
+Matrix.ToArray = function(m) {
+	if(m instanceof Matrix) {
+		return m.elements;
+	} else {
+		return m;
+	};
 };

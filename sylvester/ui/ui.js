@@ -19,20 +19,22 @@
  */
  
 sylv.ui = function() {};
- 
-function glb(name, val) {
-	if(val == undefined) {
-		switch(sylv.ui.types[name]) {
-			case "macro":
-				return eval(glb[name]);
-			default:
-				return glb[name];
+
+if(window.location.origin.substr(0,4)=="file" | window.location.origin.substr(0,4)=="http") {
+	function glb(name, val) {
+		if(val == undefined) {
+			switch(sylv.ui.types[name]) {
+				case "macro":
+					return eval(glb[name]);
+				default:
+					return glb[name];
+			};
+		} else {
+			glb[name] = val;
+			sylv.ui.print(name+":"+glb[name].toString());
+			eval(name+"=glb['"+name+"'];");
+			return glb[name];
 		};
-	} else {
-		glb[name] = val;
-		sylv.ui.print(name+":"+glb[name].toString());
-		eval(name+"=glb['"+name+"'];");
-		return glb[name];
 	};
 };
 
