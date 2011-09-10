@@ -7,7 +7,7 @@
  *
  *
  */
-define(["plugin/sylvester/sylv", "plugin/sylvester/estim/GoldenSection"],function(sylv, GoldenSection) {
+define(["sylv", "estim/GoldenSection"],function(sylv, GoldenSection) {
 	/**
 	 * Class to generate Gaussian random number
 	 *

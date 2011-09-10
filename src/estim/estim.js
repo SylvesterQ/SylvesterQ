@@ -8,4 +8,4 @@
  *
  */
 
-require(["plugin/sylvester/estim/Kaplan-Meier", "plugin/sylvester/estim/Makeham"])
+require(["estim/Kaplan-Meier", "estim/Makeham"])

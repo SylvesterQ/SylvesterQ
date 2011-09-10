@@ -8,4 +8,4 @@
  *
  */
 
-require(["plugin/sylvester/data/Csv", "plugin/sylvester/data/LifeTable"])
+require(["data/Csv", "data/LifeTable"])

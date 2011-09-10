@@ -8,7 +8,7 @@
  *
  */
  
-define(["plugin/sylvester/sylv"],function(sylv) { 
+define(["sylv"],function(sylv) { 
 	/**
 	 * Creates LifeTable
 	 */

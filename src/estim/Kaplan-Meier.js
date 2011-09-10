@@ -7,7 +7,7 @@
  *
  *
  */
-define(["plugin/sylvester/sylv"],function(sylv) {
+define(["sylv"],function(sylv) {
 	/**
 	 * Class to generate Gaussian random number
 	 *

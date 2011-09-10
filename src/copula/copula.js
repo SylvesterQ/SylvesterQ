@@ -8,4 +8,4 @@
  *
  */
 
-require(["plugin/sylvester/copula/Archimedean"])
+require(["copula/Archimedean"])
