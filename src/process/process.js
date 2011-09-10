@@ -7,4 +7,4 @@
  *
  */
 
-require(["plugin/sylvester/process/Black-Scholes", "plugin/sylvester/process/Makeham"])
+require(["process/Black-Scholes", "process/Makeham"])

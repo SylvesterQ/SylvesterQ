@@ -56,20 +56,7 @@ historyNav.pos = 0;
 historyNav.buff = [""];
 that.plot = function(vals, optIfNotMatrix) {
 	$("#consoleOut"+print.nb).before('<div id="consoleOut'+(++print.nb)+'" style="width:'+windowWidth+'px;height:300px;"></div>');
-	if (optIfNotMatrix == undefined) {
-		var data = [];
-		var size = vals[0].length;
-		for (var i = 1; i<vals.length; i++) {
-			var ligne = [];
-			for (var j = 0; j<size; j++) {
-				ligne.push([vals[0][j],vals[i][j]]);
-			};
-			data.push(ligne);
-		};
-		a=jStat.flot("#consoleOut"+print.nb, data, {rawData: true});
-	} else {
-		jStat.flot("#consoleOut"+print.nb, vals, optIfNotMatrix);
-	};
+	jStat.flot("#consoleOut"+print.nb, vals, optIfNotMatrix);
 	return ""
 };
 that.onResize = function() {

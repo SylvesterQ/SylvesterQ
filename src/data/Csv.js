@@ -7,7 +7,7 @@
  *
  *
  */
-define(["plugin/sylvester/sylv"],function(sylv) {
+define(["sylv"],function(sylv) {
 	/**
 	 * Creates a matrix from a string
 	 * @param {string} path The string representing a matrix.

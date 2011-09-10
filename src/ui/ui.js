@@ -8,7 +8,7 @@
  *
  */
 
-define(["plugin/sylvester/sylv"],function(sylv) { 
+define(["sylv"],function(sylv) { 
 	sylv.ui = function() {};
 
 	if(window.location.origin.substr(0,4)=="file" | window.location.origin.substr(0,4)=="http") {

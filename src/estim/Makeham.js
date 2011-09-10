@@ -8,7 +8,7 @@
  *
  */
 
-define(["plugin/sylvester/sylv", "plugin/sylvester/estim/BFGS", "plugin/sylvester/process/process"],function(sylv, BFGS) {
+define(["sylv", "estim/BFGS", "process/process"],function(sylv, BFGS) {
 	/**
 	 * Fonction d'évaluation de coefficients de la formule de Makeham.
 	 *
