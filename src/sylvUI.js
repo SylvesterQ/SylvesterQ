@@ -7,23 +7,18 @@
  *
  *
  */
-that = this;
-define(["data/data", "process/process", "estim/estim", "ui/ui", "copula/copula"], function() {
-require(["../tools/jStat/src/plugin/flot.jstat"]);
-that.exportAll = function() {
-	document.getElementById("consoleIn").value = sylv.ui.extractAll();
+ 
+function exportAll() {
+	consoleIn.setValue(sylv.ui.extractAll());
 };
-that.historyNavAll = function() {
-	document.getElementById("consoleIn").value = historyNav.buff.join(";\n//////////////////////\n");
+
+function keyInputShortCutAll() {
+	consoleIn.setValue(keyInputShortCut.buff.join(";\n//////////////////////\n"));
 };
-sylv.ui.print = function(val, nl) {
-	var txt = val?val.toString():"";
-	var cnsl = document.getElementById("consoleOut"+print.nb);
-	cnsl.innerHTML=txt.replace(/\n/g,"<br/>")+(nl?"<br/>":"")+cnsl.innerHTML; 
-};
-that.print = function(val) {if(val) sylv.ui.print(val, true)};
-print.nb = 0;
-that.execute = function() {
+
+function print(val) {if(val) sylv.ui.print(val, true)};
+
+function execute() {
 	var cmd = document.getElementById("consoleIn");
 	$("#consoleOut"+print.nb).before('<div id="consoleOut'+(++print.nb)+'"></div>');
 	sylv.ui.print("<hr/>", false);
@@ -32,51 +27,70 @@ that.execute = function() {
 	} catch(e) {
 		print("<span style='color:red'>"+e+"</span>");
 	};
-	historyNav.buff[historyNav.buff.length-1]=consoleIn.getValue();
+	keyInputShortCut.buff[keyInputShortCut.buff.length-1]=consoleIn.getValue();
 	consoleIn.setValue("");
-	historyNav.buff.push("");
-	historyNav.pos = historyNav.buff.length-1;
+	keyInputShortCut.buff.push("");
+	keyInputShortCut.pos = keyInputShortCut.buff.length-1;
 };
-that.historyNav = function(inst, e) {
+
+function keyInputShortCut(inst, e) {
 	if(e.shiftKey && e.type=="keydown") switch(e.keyCode) {
 		case 38:
-			if(historyNav.pos==historyNav.buff.length-1) historyNav.buff[historyNav.pos]=consoleIn.getValue();
-			historyNav.pos--;
-			if(historyNav.pos<0) historyNav.pos=0;
-			consoleIn.setValue(historyNav.buff[historyNav.pos]);
+			if(keyInputShortCut.pos==keyInputShortCut.buff.length-1) keyInputShortCut.buff[keyInputShortCut.pos]=consoleIn.getValue();
+			keyInputShortCut.pos--;
+			if(keyInputShortCut.pos<0) keyInputShortCut.pos=0;
+			consoleIn.setValue(keyInputShortCut.buff[keyInputShortCut.pos]);
 			break;
 		case 40:
-			historyNav.pos++;
-			if(historyNav.pos>historyNav.buff.length-1) historyNav.pos=historyNav.buff.length-1;
-			consoleIn.setValue(historyNav.buff[historyNav.pos]);
+			keyInputShortCut.pos++;
+			if(keyInputShortCut.pos>keyInputShortCut.buff.length-1) keyInputShortCut.pos=keyInputShortCut.buff.length-1;
+			consoleIn.setValue(keyInputShortCut.buff[keyInputShortCut.pos]);
+			break;
+		case 13:
+			execute();
 			break;
 	};
 };
-historyNav.pos = 0;
-historyNav.buff = [""];
-that.plot = function(vals, optIfNotMatrix) {
+
+function plot(vals, optIfNotMatrix) {
 	$("#consoleOut"+print.nb).before('<div id="consoleOut'+(++print.nb)+'" style="width:'+windowWidth+'px;height:300px;"></div>');
 	jStat.flot("#consoleOut"+print.nb, vals, optIfNotMatrix);
 	return ""
 };
-that.onResize = function() {
+
+function onResize() {
 	windowWidth = $(window).width()-70;
 	$("#consoleIn").width(windowWidth);
 	for (var i = 0; i<=print.nb; i++) {
 		$("#consoleOut"+i).width(windowWidth)
 	};
 };
-$(window).resize(onResize);
 
-$(document).ready(function() {
-	consoleIn = CodeMirror.fromTextArea(document.getElementById("consoleIn"), {
-		indentWithTabs: true,
-		mode:  "javascript",
-		matchBrackets: true,
-		onKeyEvent: historyNav,
-		theme: "default"
+define(["data/data", "process/process", "estim/estim", "ui/ui", "copula/copula"], function() {
+	require(["../tools/jStat/src/plugin/flot.jstat"]);
+	
+	sylv.ui.print = function(val, nl) {
+		var txt = val?val.toString():"";
+		var cnsl = document.getElementById("consoleOut"+print.nb);
+		cnsl.innerHTML=txt.replace(/\n/g,"<br/>")+(nl?"<br/>":"")+cnsl.innerHTML; 
+	};
+
+	print.nb = 0;
+
+	keyInputShortCut.pos = 0;
+	keyInputShortCut.buff = [""];
+
+	$(window).resize(onResize);
+
+	$(document).ready(function() {
+		consoleIn = CodeMirror.fromTextArea(document.getElementById("consoleIn"), {
+			indentWithTabs: true,
+			mode:  "javascript",
+			matchBrackets: true,
+			onKeyEvent: keyInputShortCut,
+			theme: "default"
+		});
+		onResize();
 	});
-	onResize();
-});
 
 });
