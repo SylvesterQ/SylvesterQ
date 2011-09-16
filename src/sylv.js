@@ -27,6 +27,7 @@ define(["main"], function() {
 	};
 
 	sylv.extend = function(obj, methodes) {
+		if (typeof(obj) == "string") obj = sylv.setExportable(obj);
 		for(var mth in methodes) {
 			obj.prototype[mth] = methodes[mth];
 			obj[mth] = function(that) {
@@ -36,10 +37,16 @@ define(["main"], function() {
 		return obj;
 	};
 	
+	sylv.setExportable = function(objName) {
+		var obj = eval(objName);
+		obj.prototype.constructorName = objName;
+		return obj;
+	};
+		
 	sylv.extend(mainThat.jStat, {
 		x: mainThat.jStat.multiply,
 		
-		toString : function() {
+		toString: function() {
 			var res = "[[";
 			res = res+this.toArray().join("],\n[");
 			res = res+"]]";
