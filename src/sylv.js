@@ -36,6 +36,17 @@ define(["main"], function() {
 		return obj;
 	};
 	
+	sylv.extend(mainThat.jStat, {
+		x: mainThat.jStat.multiply,
+		
+		toString : function() {
+			var res = "[[";
+			res = res+this.toArray().join("],\n[");
+			res = res+"]]";
+			return res;
+		}
+	});
+	
 	return sylv;
 
 });

@@ -7,17 +7,16 @@
  *
  *
  */
-
+that = this;
 define(["sylv"],function(sylv) { 
 	sylv.ui = function() {};
 
-	if(window.location.origin.substr(0,4)=="file" | window.location.origin.substr(0,4)=="http") {
-		function glb(name, val) {
+	if(window.location.origin.substr(0,4)=="file" || window.location.origin.substr(0,4)=="http") {
+		that.glb = function(name, val) {
 			if(val == undefined) {
-				switch(sylv.ui.types[name]) {
-					case "macro":
+				if(typeof(glb[name]) == "string") {
 						return eval(glb[name]);
-					default:
+				} else {
 						return glb[name];
 				};
 			} else {
