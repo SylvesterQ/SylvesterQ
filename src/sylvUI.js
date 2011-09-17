@@ -12,7 +12,7 @@ function exportAll() {
 	consoleIn.setValue(sylv.ui.extractAll());
 };
 
-function keyInputShortCutAll() {
+function historyNavAll() {
 	consoleIn.setValue(keyInputShortCut.buff.join(";\n//////////////////////\n"));
 };
 
@@ -50,6 +50,9 @@ function keyInputShortCut(inst, e) {
 			execute();
 			break;
 	};
+	if(e.shiftKey && e.keyCode==13) {
+		event.preventDefault();
+	};
 };
 
 function plot(vals, optIfNotMatrix) {
@@ -66,7 +69,7 @@ function onResize() {
 	};
 };
 
-define(["data/data", "process/process", "estim/estim", "ui/ui", "copula/copula"], function() {
+define(["data/data", "process/process", "estim/estim", "ui/ui", "copula/copula", "polynomial/polynomial"], function() {
 	require(["../tools/jStat/src/plugin/flot.jstat"]);
 	
 	sylv.ui.print = function(val, nl) {

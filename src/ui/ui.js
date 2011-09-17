@@ -35,7 +35,7 @@ define(["sylv"],function(sylv) {
 	sylv.ui.extractAll = function() {
 		var res = "";
 		for (name in glb) {
-			var type = glb[name].constructor.name;
+			var type = glb[name].constructorName?glb[name].constructorName:glb[name].constructor.name;
 			if(type=="String") {
 				res += "glb('"+name+"',\n'"+glb[name].toString()+"'\n);\n";
 			} else {
