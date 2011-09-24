@@ -8,7 +8,7 @@
  *
  */
 that = this;
-define(["sylv"],function(sylv) { 
+define(["sylv", "ui/plot"],function(sylv) { 
 	sylv.ui = function() {};
 
 	if(window.location.origin.substr(0,4)=="file" || window.location.origin.substr(0,4)=="http") {
