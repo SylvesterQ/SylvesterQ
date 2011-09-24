@@ -9,7 +9,6 @@
  */
  
 define(["main"], function() {
-	sylv = function() { };
 
 	sylv.loadFile = function(name) {
 		if(sylv.loadFile.path==undefined) {

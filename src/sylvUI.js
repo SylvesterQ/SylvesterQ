@@ -69,8 +69,7 @@ function onResize() {
 	};
 };
 
-define(["data/data", "process/process", "estim/estim", "ui/ui", "copula/copula", "polynomial/polynomial"], function() {
-	require(["../tools/jStat/src/plugin/flot.jstat"]);
+define(["data/data", "process/process", "estim/estim", "copula/copula", "polynomial/polynomial", "ui/ui"], function() {
 	
 	sylv.ui.print = function(val, nl) {
 		var txt = val?val.toString():"";
