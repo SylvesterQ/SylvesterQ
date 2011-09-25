@@ -27,11 +27,15 @@ define(["main"], function() {
 
 	sylv.extend = function(obj, methodes) {
 		if (typeof(obj) == "string") obj = sylv.setExportable(obj);
-		for(var mth in methodes) {
-			obj.prototype[mth] = methodes[mth];
-			obj[mth] = function(that) {
-				return methodes[mth].apply(that,Array.prototype.slice.call(arguments, 1))
-			};
+		if (methodes.prototype) {
+			obj.prototype = methodes.prototype;
+		} else {
+			for(var mth in methodes) {
+				obj.prototype[mth] = methodes[mth];
+				obj[mth] = function(that) {
+					return methodes[mth].apply(that,Array.prototype.slice.call(arguments, 1))
+				};
+			}
 		}
 		return obj;
 	};
