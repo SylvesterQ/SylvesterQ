@@ -20,17 +20,21 @@ Licensed under the MIT License
 </head>
 <body>
 	<h1><a href="http://sites.google.com/site/sylvesteractuaire/">SylvesterQ</a></h1>
+	<br/>
+	<textarea name="consoleIn" id="consoleIn" rows="10"></textarea>
+	<br/>
+	<select name="inputMode" id="inputMode">
+		<option>Standard</option>
+		<option>Formal</option>
+	</select>
+	<button type="button" onclick="javascript: execute()">
+		execute
+	</button>
 	<button type="button" onclick="javascript: exportAll()">
 		export
 	</button>
 	<button type="button" onclick="javascript: historyNavAll()">
 		history
-	</button>
-	<br/>
-	<textarea name="consoleIn" id="consoleIn" rows="10"></textarea>
-	<br/>
-	<button type="button" onclick="javascript: execute()">
-		execute
 	</button>
 	<div id="consoleOut0">
 		Wellcome in SylvesterQ

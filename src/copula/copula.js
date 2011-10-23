@@ -8,4 +8,4 @@
  *
  */
 
-require(["copula/Archimedean"])
+define(["copula/Archimedean"])

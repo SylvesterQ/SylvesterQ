@@ -23,7 +23,11 @@ function execute() {
 	$("#consoleOut"+print.nb).before('<div id="consoleOut'+(++print.nb)+'"></div>');
 	sylv.ui.print("<hr/>", false);
 	try {
-		print(eval(consoleIn.getValue()));
+		if($("#inputMode").val() = "Standard") {
+			print(eval(consoleIn.getValue()));
+		} else {
+			print(sylv.Formal(consoleIn.getValue()));
+		};
 	} catch(e) {
 		print("<span style='color:red'>"+e+"</span>");
 	};
@@ -69,7 +73,7 @@ function onResize() {
 	};
 };
 
-define(["data/data", "process/process", "estim/estim", "copula/copula", "polynomial/polynomial", "ui/ui"], function() {
+define(["tree/tree", "data/data", "process/process", "estim/estim", "copula/copula", "formal/formal", "ui/ui"], function() {
 	
 	sylv.ui.print = function(val, nl) {
 		var txt = val?val.toString():"";

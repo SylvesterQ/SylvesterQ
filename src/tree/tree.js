@@ -3,9 +3,9 @@
 // Licensed under the MIT License
 
 /**
- * @fileoverview Class for representing matrices and static helper functions.
+ * @fileoverview Class for representing tree.
  *
  *
  */
 
-define(["data/Csv", "data/LifeTable"])
+define(["tree/node"])

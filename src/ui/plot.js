@@ -5,7 +5,7 @@
 
 define(["sylv"], function() {
 	
-	require(["../tools/jStat/src/plugin/flot.jstat"]);
+	define(["../tools/jStat/src/plugin/flot.jstat"]);
 	//to plot histograms given the data and number of bins.
 	sylv.histogram = function(plot_container,data, bins) {
 

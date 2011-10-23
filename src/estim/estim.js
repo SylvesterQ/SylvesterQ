@@ -8,4 +8,4 @@
  *
  */
 
-require(["estim/Kaplan-Meier", "estim/Makeham"])
+define(["estim/Kaplan-Meier", "estim/Makeham"])
