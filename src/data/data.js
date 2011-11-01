@@ -8,4 +8,4 @@
  *
  */
 
-define(["data/Csv", "data/LifeTable"])
+define(["data/GlobalSync", "data/Csv", "data/LifeTable"])

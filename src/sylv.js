@@ -3,7 +3,7 @@
 // Licensed under the MIT License
 
 /**
- * @fileoverview Class for representing matrices and static helper functions.
+ * @fileoverview Bases functions
  *
  *
  */

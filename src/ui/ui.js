@@ -3,44 +3,26 @@
 // Licensed under the MIT License
 
 /**
- * @fileoverview Class for representing matrices and static helper functions.
+ * @fileoverview Define sylv.ui: some ui tools
  *
  *
  */
-that = this;
-define(["sylv", "ui/plot"],function(sylv) { 
-	sylv.ui = function() {};
 
-	if(window.location.origin.substr(0,4)=="file" || window.location.origin.substr(0,4)=="http") {
-		that.glb = function(name, val) {
-			if(val == undefined) {
-				if(typeof(glb[name]) == "string") {
-						return eval(glb[name]);
-				} else {
-						return glb[name];
-				};
-			} else {
-				glb[name] = val;
-				sylv.ui.print(name+":"+glb[name].toString());
-				eval(name+"=glb['"+name+"'];");
-				return glb[name];
-			};
-		};
-	};
+define(["sylv"],function(sylv) { 
+	
+	sylv.ui = function() {};
 
 	sylv.ui.print = function() {
 		alert("Affichage not defined");
 	};
+	
+	// short function to print
+	$p = function(val) {if(val) sylv.ui.print(val, true)};
 
 	sylv.ui.extractAll = function() {
 		var res = "";
 		for (name in glb) {
-			var type = glb[name].constructorName?glb[name].constructorName:glb[name].constructor.name;
-			if(type=="String") {
-				res += "glb('"+name+"',\n'"+glb[name].toString()+"'\n);\n";
-			} else {
-				res += "glb('"+name+"',new "+type+"(\n"+glb[name].toString()+"\n));\n";
-			};
+			res += "glb('"+name+"',"+globalSync.getString(name)+");\n";
 		};
 		return res;
 	};
