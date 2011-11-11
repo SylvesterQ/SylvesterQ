@@ -3,7 +3,7 @@
 // Licensed under the MIT License
 
 mainThat = this
-define(["./stat/core", "./stat/distribution", "./stat/special", "./stat/linearalgebra", "./stat/optimization"], function() {
+define(["./stat/stat", "./linearAlgebra/linearAlgebra"], function() {
 	mainThat.sylv = mainThat.jStat
 	return mainThat.jStat
 });

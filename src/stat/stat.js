@@ -3,6 +3,10 @@
  * Copyright (c) 2011
  * This document is licensed as free software under the terms of the
  * MIT License: http://www.opensource.org/licenses/mit-license.php */
+ 
+define(["stat/distribution", "stat/special", "stat/optimization"], function() {
+});
+
 this.j$ = this.jStat = (function( Math, undefined ) {
 
 	// for quick reference
