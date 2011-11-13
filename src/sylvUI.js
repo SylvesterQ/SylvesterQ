@@ -72,7 +72,7 @@ function onResize() {
 	};
 };
 
-define(["tree/tree", "data/data", "process/process", "estim/estim", "copula/copula", "formal/formal", "ui/ui", "ui/plot"], function() {
+define(["stat/stat", "tree/tree", "data/data", "process/process", "estim/estim", "copula/copula", "formal/formal", "ui/ui", "ui/plot"], function() {
 	
 	sylv.ui.print = function(val, nl) {
 		var txt = val?val.toString():"";

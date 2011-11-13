@@ -3,9 +3,8 @@
 //
 // Licensed under the MIT License
 
-define(["sylv"], function() {
+define(["sylv", "ui/flot"], function() {
 	
-	define(["./stat/plugin/flot.jstat"]);
 	//to plot histograms given the data and number of bins.
 	sylv.histogram = function(plot_container,data, bins) {
 

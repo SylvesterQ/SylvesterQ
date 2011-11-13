@@ -31,10 +31,17 @@ define(["sylv", "tree/tree"],function(sylv) {
 	sylv.extend(sylv.Funct, {
 		calc: function() {
 			return this.val.apply(this, this.nodes);
+		},
+		
+		extend: function(methodes) {
+			for(var mth in methodes) {
+				sylv.Funct.Creat(mth, methodes[mth]);
+			}
 		}
 	});
 	
 	sylv.Functs = {};
+	f$ = Math;
 	
 	/**
 	 * Help to create new formal function
@@ -48,6 +55,7 @@ define(["sylv", "tree/tree"],function(sylv) {
 		sylv.Functs[name] = new sylv.Funct(value);
 		sylv.Functs[name].operators = operators;
 		sylv.Functs[name].name = name;
+		f$[name] = value;
 	};
 	
 	return sylv.Funct;

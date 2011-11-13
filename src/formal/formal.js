@@ -8,7 +8,7 @@
  *
  */
 
-define(["formal/polynomial", "formal/operators"],function() {
+define(["formal/polynomial", "formal/operators", "formal/standard"],function() {
 	sylv.Formal = function(txt) {
 		txt = txt.split("=");
 		txt[0] = txt[0].split(/[()]/);

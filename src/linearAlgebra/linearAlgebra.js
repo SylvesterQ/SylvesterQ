@@ -1,6 +1,9 @@
 /*Provides functions for the solution of linear system of equations, integration, extrapolation,
  * interpolation, eigenvalue problems, differential equations and PCA analysis. */
 
+define(["sylv", "linearAlgebra/matrix"], function() {
+});
+ 
 (function( jStat, Math ) {
 
 var push = Array.prototype.push;
