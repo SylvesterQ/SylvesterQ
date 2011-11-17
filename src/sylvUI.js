@@ -16,16 +16,19 @@ function historyNavAll() {
 	consoleIn.setValue(keyInputShortCut.buff.join(";\n//////////////////////\n"));
 };
 
-function print(val) {if(val) sylv.ui.print(val, true)};
-
 function execute() {
 	var cmd = document.getElementById("consoleIn");
-	$("#consoleOut"+print.nb).before('<div id="consoleOut'+(++print.nb)+'"></div>');
+	$("#consoleOut"+$p.nb).before('<div id="consoleOut'+(++$p.nb)+'"></div>');
 	sylv.ui.print("<hr/>", false);
 	try {
-		print(eval(consoleIn.getValue()));
+		// select the input mode
+		if($("#inputMode").val() == "Standard") {
+			$p(eval(consoleIn.getValue()));
+		} else {
+			$p(sylv.Formal(consoleIn.getValue()));
+		};
 	} catch(e) {
-		print("<span style='color:red'>"+e+"</span>");
+		$p("<span style='color:red'>"+e+"</span>");
 	};
 	keyInputShortCut.buff[keyInputShortCut.buff.length-1]=consoleIn.getValue();
 	consoleIn.setValue("");
@@ -56,29 +59,28 @@ function keyInputShortCut(inst, e) {
 };
 
 function plot(vals, optIfNotMatrix) {
-	$("#consoleOut"+print.nb).before('<div id="consoleOut'+(++print.nb)+'" style="width:'+windowWidth+'px;height:300px;"></div>');
-	jStat.flot("#consoleOut"+print.nb, vals, optIfNotMatrix);
+	$("#consoleOut"+$p.nb).before('<div id="consoleOut'+(++$p.nb)+'" style="width:'+windowWidth+'px;height:300px;"></div>');
+	jStat.flot("#consoleOut"+$p.nb, vals, optIfNotMatrix);
 	return ""
 };
 
 function onResize() {
 	windowWidth = $(window).width()-70;
 	$("#consoleIn").width(windowWidth);
-	for (var i = 0; i<=print.nb; i++) {
+	for (var i = 0; i<=$p.nb; i++) {
 		$("#consoleOut"+i).width(windowWidth)
 	};
 };
 
-define(["data/data", "process/process", "estim/estim", "ui/ui", "copula/copula", "polynomial/polynomial"], function() {
-	require(["../tools/jStat/src/plugin/flot.jstat"]);
+define(["stat/stat", "tree/tree", "data/data", "process/process", "estim/estim", "copula/copula", "formal/formal", "ui/ui", "ui/plot"], function() {
 	
 	sylv.ui.print = function(val, nl) {
 		var txt = val?val.toString():"";
-		var cnsl = document.getElementById("consoleOut"+print.nb);
+		var cnsl = document.getElementById("consoleOut"+$p.nb);
 		cnsl.innerHTML=txt.replace(/\n/g,"<br/>")+(nl?"<br/>":"")+cnsl.innerHTML; 
 	};
 
-	print.nb = 0;
+	$p.nb = 0;
 
 	keyInputShortCut.pos = 0;
 	keyInputShortCut.buff = [""];
