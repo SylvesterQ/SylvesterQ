@@ -3,13 +3,14 @@
 // Licensed under the MIT License
 
 /**
- * @fileoverview Class for representing matrices and static helper functions.
+ * @fileoverview Bases functions
  *
  *
  */
  
-define(["main"], function() {
-	sylv = function() { };
+define(function() {
+
+	sylv = {};
 
 	sylv.loadFile = function(name) {
 		if(sylv.loadFile.path==undefined) {
@@ -26,13 +27,20 @@ define(["main"], function() {
 		document.write('<script type="text/javascript" src="' + sylv.loadFile.path + name + '"></script>');
 	};
 
-	sylv.extend = function(obj, methodes) {
+	sylv.extend = function(obj, methodes, forceStatic) {
+		if(forceStatic) {
+			for(var mth in methodes) {
+				obj[mth] = methodes[mth];
+			}
+			return obj;
+		}
 		if (typeof(obj) == "string") obj = sylv.setExportable(obj);
-		for(var mth in methodes) {
-			obj.prototype[mth] = methodes[mth];
-			obj[mth] = function(that) {
-				return methodes[mth].apply(that,Array.prototype.slice.call(arguments, 1))
-			};
+		if (methodes.prototype) {
+			obj.prototype = methodes.prototype;
+		} else {
+			for(var mth in methodes) {
+				obj.prototype[mth] = methodes[mth];
+			}
 		}
 		return obj;
 	};
@@ -42,17 +50,6 @@ define(["main"], function() {
 		obj.prototype.constructorName = objName;
 		return obj;
 	};
-		
-	sylv.extend(mainThat.jStat, {
-		x: mainThat.jStat.multiply,
-		
-		toString: function() {
-			var res = "[[";
-			res = res+this.toArray().join("],\n[");
-			res = res+"]]";
-			return res;
-		}
-	});
 	
 	return sylv;
 

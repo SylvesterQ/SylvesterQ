@@ -7,4 +7,4 @@
  *
  */
 
-require(["process/Black-Scholes", "process/Makeham"])
+define(["process/Black-Scholes", "process/Makeham"])

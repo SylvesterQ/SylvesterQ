@@ -11,6 +11,7 @@ Licensed under the MIT License
 	<script src="./tools/flot/jquery.js"></script>
 	<script src="./tools/flot/jquery.flot.js"></script>
 	<script src="./tools/flot/jquery.flot.resize.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
 	<script data-main="src/sylvUI" src="tools/require.js"></script>
 	<script src="./tools/codemirror/codemirror.js"></script>
 	<script src="./tools/codemirror/mode/javascript.js"></script>
@@ -20,18 +21,22 @@ Licensed under the MIT License
 </head>
 <body>
 	<h1><a href="http://sites.google.com/site/sylvesteractuaire/">SylvesterQ</a></h1>
+	<br/>
+	<select name="inputMode" id="inputMode">
+		<option>Standard</option>
+		<option>Formal</option>
+	</select>
+	<button type="button" onclick="javascript: execute()">
+		execute
+	</button>
 	<button type="button" onclick="javascript: exportAll()">
 		export
 	</button>
 	<button type="button" onclick="javascript: historyNavAll()">
 		history
 	</button>
-	<br/>
 	<textarea name="consoleIn" id="consoleIn" rows="10"></textarea>
 	<br/>
-	<button type="button" onclick="javascript: execute()">
-		execute
-	</button>
 	<div id="consoleOut0">
 		Wellcome in SylvesterQ
 	</div>

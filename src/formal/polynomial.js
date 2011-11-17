@@ -3,12 +3,12 @@
 // Licensed under the MIT License
 
 /**
- * @fileoverview Classe representing Archimedean Copula.
+ * @fileoverview Classe representing formal Polynomia.
  *
  *
  */
 
-define(["sylv"],function(sylv) {
+define(["formal/funct"],function() {
 	/**
 	 * Class to generate Gaussian random number
 	 *
