@@ -1,5 +1,5 @@
 /**
- * m$ - JavaScript Statistical Library
+ * sylv.matrix - JavaScript Statistical Library
  * Copyright (c) 2011
  * This document is licensed as free software under the terms of the
  * MIT License: http://www.opensource.org/licenses/mit-license.php */
@@ -56,6 +56,42 @@ define(["sylv"], function() {
 	m$ = function(args) {return new sylv.matrix(args)};
 	
 	sylv.extend(sylv.matrix, {
+		// generate a rows x cols matrix of zeros
+		zeros : function( rows, cols ) {
+			return sylv.matrix.create( rows, cols, function() { return 0; });
+		},
+
+		// generate a rows x cols matrix of ones
+		ones : function( rows, cols ) {
+			return sylv.matrix.create( rows, cols, function() { return 1; });
+		},
+
+		// generate a rows x cols matrix of uniformly random numbers
+		rand : function( rows, cols ) {
+			return sylv.matrix.create( rows, cols, function() { return Math.random(); });
+		},
+
+		// generate an identity matrix of size row x cols
+		identity : function( rows, cols ) {
+			if(!cols) cols = rows;
+			return sylv.matrix.create( rows, cols, function( i, j ) { return ( i === j ) ? 1 : 0; });
+		},
+
+		// generate sequence
+		seq : function( min, max, length, func ) {
+			var arr = [],
+				hival = calcRdx( min, max ),
+				step = ( max * hival - min * hival ) / (( length - 1 ) * hival ),
+				current = min,
+				cnt = 0;
+			// current is assigned using a technique to compensate for IEEE error
+			for ( ; current <= max; cnt++, current = ( min * hival + step * hival * cnt ) / hival )
+				arr.push(( func ? func( current ) : current ));
+			return arr;
+		}
+	}, true);
+	
+	sylv.extend(sylv.matrix, {
 		length : 0,
 		
 		toString: function() {
@@ -85,7 +121,7 @@ define(["sylv"], function() {
 
 		// Returns a specified row as a vector
 		row : function( index ) {
-			return m$( this[index] );
+			return sylv.matrix( this[index] );
 		},
 
 		// Returns the specified column as a vector
@@ -95,7 +131,7 @@ define(["sylv"], function() {
 			for ( ; i < this.length; i++ ) {
 				column[i] = [ this[i][index] ];
 			}
-			return m$( column );
+			return sylv.matrix( column );
 		},
 
 		// Returns the diagonal of the matrix
@@ -106,7 +142,7 @@ define(["sylv"], function() {
 			for( ; row < nrow; row++ ) {
 				res[row] = [ this[row][row] ];
 			}
-			return m$( res );
+			return sylv.matrix( res );
 		},
 
 		// Returns the anti-diagonal of the matrix
@@ -117,17 +153,17 @@ define(["sylv"], function() {
 			for( ; nrow >= 0; nrow--, i++ ) {
 				res[i] = [ this[i][nrow] ];
 			}
-			return m$( res );
+			return sylv.matrix( res );
 		},
 
 		// map a function to a matrix or vector
 		map : function( func, toAlter ) {
-			return m$( m$.map( this, func, toAlter ));
+			return sylv.matrix( sylv.matrix.map( this, func, toAlter ));
 		},
 
 		// destructively alter an array
 		alter : function( func ) {
-			m$.alter( this, func );
+			sylv.matrix.alter( this, func );
 			return this;
 		},
 		
@@ -165,7 +201,7 @@ define(["sylv"], function() {
 
 		// destructively alter an array
 		alter : function( arr, func ) {
-			return m$.map( arr, func, true );
+			return sylv.matrix.map( arr, func, true );
 		},
 
 		// generate a rows x cols matrix according to the supplied function
@@ -180,46 +216,12 @@ define(["sylv"], function() {
 			return res;
 		},
 
-		// generate a rows x cols matrix of zeros
-		zeros : function( rows, cols ) {
-			return m$.create( rows, cols, function() { return 0; });
-		},
-
-		// generate a rows x cols matrix of ones
-		ones : function( rows, cols ) {
-			return m$.create( rows, cols, function() { return 1; });
-		},
-
-		// generate a rows x cols matrix of uniformly random numbers
-		rand : function( rows, cols ) {
-			return m$.create( rows, cols, function() { return Math.random(); });
-		},
-
-		// generate an identity matrix of size row x cols
-		identity : function( rows, cols ) {
-			if(!cols) cols = rows;
-			return m$.create( rows, cols, function( i, j ) { return ( i === j ) ? 1 : 0; });
-		},
-
-		// generate sequence
-		seq : function( min, max, length, func ) {
-			var arr = [],
-				hival = calcRdx( min, max ),
-				step = ( max * hival - min * hival ) / (( length - 1 ) * hival ),
-				current = min,
-				cnt = 0;
-			// current is assigned using a technique to compensate for IEEE error
-			for ( ; current <= max; cnt++, current = ( min * hival + step * hival * cnt ) / hival )
-				arr.push(( func ? func( current ) : current ));
-			return arr;
-		},
-
 		// add a vector or scalar to the vector
 		add : function( arr, arg ) {
 			// check if arg is a vector or scalar
 			return isNaN( arg ) ?
-				m$.map( arr, function( value, row, col ) { return value + arg[row][col]; })
-			: m$.map( arr, function ( value ) { return value + arg; });
+				sylv.matrix.map( arr, function( value, row, col ) { return value + arg[row][col]; })
+			: sylv.matrix.map( arr, function ( value ) { return value + arg; });
 		},
 
 		// TODO: Implement matrix division
@@ -227,7 +229,7 @@ define(["sylv"], function() {
 		divide : function( arr, arg ) {
 			return isNaN( arg ) ?
 				false
-			: m$.map(arr, function ( value ) { return value / arg; });
+			: sylv.matrix.map(arr, function ( value ) { return value / arg; });
 		},
 
 		// matrix multiplication
@@ -235,7 +237,7 @@ define(["sylv"], function() {
 			var row, col, nrescols, sum,
 				nrow = arr.length,
 				ncol = arr[0].length,
-				res = m$.zeros( nrow, nrescols = ( isNaN( arg )) ? arg[0].length : ncol ),
+				res = sylv.matrix.zeros( nrow, nrescols = ( isNaN( arg )) ? arg[0].length : ncol ),
 				rescols = 0;
 			if( isNaN( arg )) {
 				for( ; rescols < nrescols; rescols++ ) {
@@ -248,7 +250,7 @@ define(["sylv"], function() {
 				}
 				return ( nrow === 1 && rescols === 1 ) ? res[0][0] : res;
 			}
-			return m$.map( arr, function( value ) { return value * arg; });
+			return sylv.matrix.map( arr, function( value ) { return value * arg; });
 		},
 
 		// subtract a vector or scalar from the vector
@@ -256,12 +258,12 @@ define(["sylv"], function() {
 			var res;
 			if( isNaN( arg ) ) {
 				if( isNaN( arg[0] ) ) {
-					res = m$.map( arr, function( value, row, col ) { return value - arg[row][col]?arg[row][col]:0; });
+					res = sylv.matrix.map( arr, function( value, row, col ) { return value - arg[row][col]?arg[row][col]:0; });
 				} else {
-					res = m$.map( arr, function( value, row, col ) { return value - arg[col]?arg[col]:0; });
+					res = sylv.matrix.map( arr, function( value, row, col ) { return value - arg[col]?arg[col]:0; });
 				};
 			} else {
-				res = m$.map( arr, function( value ) { return value - arg; });
+				res = sylv.matrix.map( arr, function( value ) { return value - arg; });
 			};
 			return res
 		},
@@ -271,8 +273,8 @@ define(["sylv"], function() {
 			if ( !isArray( arr )) arr = [ arr ];
 			if ( !isArray( arg )) arg = [ arg ];
 				// convert column to row vector
-			var left = ( arr[0].length === 1 && arr.length !== 1 ) ? m$.transpose( arr ) : arr,
-				right = ( arg[0].length === 1 && arg.length !== 1 ) ? m$.transpose( arg ) : arg,
+			var left = ( arr[0].length === 1 && arr.length !== 1 ) ? sylv.matrix.transpose( arr ) : arr,
+				right = ( arg[0].length === 1 && arg.length !== 1 ) ? sylv.matrix.transpose( arg ) : arg,
 				res = [],
 				row = 0,
 				nrow = left.length,
@@ -290,17 +292,17 @@ define(["sylv"], function() {
 
 		// raise every element by a scalar or vector
 		pow : function( arr, arg ) {
-			return m$.map( arr, function( value ) { return Math.pow( value, arg ); });
+			return sylv.matrix.map( arr, function( value ) { return Math.pow( value, arg ); });
 		},
 
 		// generate the absolute values of the vector
 		abs : function( arr ) {
-			return m$.map( arr, function( value ) { return Math.abs( value ); });
+			return sylv.matrix.map( arr, function( value ) { return Math.abs( value ); });
 		},
 
 		// set all values to zero
 		clear : function( arr ) {
-			return m$.alter( arr, function() { return 0; });
+			return sylv.matrix.alter( arr, function() { return 0; });
 		},
 
 		// BUG: Does not work for matrices
@@ -312,13 +314,13 @@ define(["sylv"], function() {
 				return false;
 			}
 			// vector norm
-			return Math.sqrt( m$.dot( arr, arr ));
+			return Math.sqrt( sylv.matrix.dot( arr, arr ));
 		},
 
 		// BUG: Does not work for matrices
 		// computes the angle between two vectors
 		angle : function( arr, arg ) {
-			 return Math.acos( m$.dot( arr, arg ) / ( m$.norm( arr ) * m$.norm( arg )));
+			 return Math.acos( sylv.matrix.dot( arr, arg ) / ( sylv.matrix.norm( arr ) * sylv.matrix.norm( arg )));
 		},
 
 		// Tests whether a matrix is symmetric
@@ -357,7 +359,7 @@ define(["sylv"], function() {
 
 		// mean value of an array
 		mean : function( arr ) {
-			return m$.sum( arr ) / arr.length;
+			return sylv.matrix.sum( arr ) / arr.length;
 		},
 
 		// median of an array
@@ -408,7 +410,7 @@ define(["sylv"], function() {
 
 		// variance of an array
 		variance : function( arr ) {
-			var mean = m$.mean( arr ),
+			var mean = sylv.matrix.mean( arr ),
 				stSum = 0,
 				i = arr.length - 1;
 			for( ; i >= 0; i-- ) {
@@ -419,13 +421,13 @@ define(["sylv"], function() {
 
 		// standard deviation of an array
 		stdev : function( arr ) {
-			return Math.sqrt( m$.variance( arr ));
+			return Math.sqrt( sylv.matrix.variance( arr ));
 		},
 
 		// mean deviation (mean absolute deviation) of an array
 		meandev : function( arr ) {
 			var devSum = 0,
-				mean = m$.mean( arr ),
+				mean = sylv.matrix.mean( arr ),
 				i = arr.length - 1;
 			for ( ; i >= 0; i-- ) {
 				devSum += Math.abs( arr[i] - mean );
@@ -436,7 +438,7 @@ define(["sylv"], function() {
 		// median deviation (median absolute deviation) of an array
 		meddev : function( arr ) {
 			var devSum = 0,
-				median = m$.median( arr ),
+				median = sylv.matrix.median( arr ),
 				i = arr.length - 1;
 			for ( ; i >= 0; i-- ) {
 				devSum += Math.abs( arr[i] - median );
@@ -457,20 +459,20 @@ define(["sylv"], function() {
 
 		// covariance of two arrays
 		covariance : function( arr1, arr2 ) {
-			var u = m$.mean( arr1 ),
-				v = m$.mean( arr2 ),
+			var u = sylv.matrix.mean( arr1 ),
+				v = sylv.matrix.mean( arr2 ),
 				sq_dev = [],
 				arr1Len = arr1.length,
 				i = 0;
 			for ( ; i < arr1Len; i++ ) {
 				sq_dev[i] = ( arr1[i] - u ) * ( arr2[i] - v );
 			}
-			return m$.sum( sq_dev ) / arr1Len;
+			return sylv.matrix.sum( sq_dev ) / arr1Len;
 		},
 
 		// correlation coefficient of two arrays
 		corrcoeff : function( arr1, arr2 ) {
-			return m$.covariance( arr1, arr2 ) / m$.stdev( arr1 ) / m$.stdev( arr2 );
+			return sylv.matrix.covariance( arr1, arr2 ) / sylv.matrix.stdev( arr1 ) / sylv.matrix.stdev( arr2 );
 		}
 	});
 });
