@@ -31,14 +31,16 @@ define(["sylv", "tree/tree"],function(sylv) {
 	sylv.extend(sylv.Funct, {
 		calc: function() {
 			return this.val.apply(this, this.nodes);
-		},
-		
+		}
+	});
+	
+	sylv.extend(sylv.Funct, {
 		extend: function(methodes) {
 			for(var mth in methodes) {
 				sylv.Funct.Creat(mth, methodes[mth]);
 			}
 		}
-	});
+	}, true);
 	
 	sylv.Functs = {};
 	f$ = Math;

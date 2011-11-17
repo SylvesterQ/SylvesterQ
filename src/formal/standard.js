@@ -48,7 +48,7 @@ define(["formal/funct"],function() {
 		return h;
 	}
 
-	// extending static jStat methods
+	// extending static f$ methods
 	sylv.Funct.extend({
 
 		// Log-gamma function
@@ -128,8 +128,8 @@ define(["formal/funct"],function() {
 		gammap : function( a, x ) {
 
 			var ITMAX = Math.ceil( Math.log( a ) * 8.5 + a * 0.4 + 17 ),
-				aln = jStat.gammaln( a ),
-				afn = jStat.gammafn( a ),
+				aln = f$.gammaln( a ),
+				afn = f$.gammafn( a ),
 				ap = a,
 				sum = 1 / a,
 				del = sum,
@@ -164,27 +164,27 @@ define(["formal/funct"],function() {
 
 		// natural log factorial of n
 		factorialln : function( n ) {
-			return n < 0 ? NaN : jStat.gammaln( n + 1 );
+			return n < 0 ? NaN : f$.gammaln( n + 1 );
 		},
 
 		// factorial of n
 		factorial : function( n ) {
-			return n < 0 ? NaN : jStat.gammafn( n + 1 );
+			return n < 0 ? NaN : f$.gammafn( n + 1 );
 		},
 
 		// combinations of n, m
 		combination : function( n, m ) {
-			return ( jStat.factorial( n ) / jStat.factorial( m )) / jStat.factorial( n - m );
+			return ( f$.factorial( n ) / f$.factorial( m )) / f$.factorial( n - m );
 		},
 
 		// permutations of n, m
 		permutation : function( n, m ) {
-			return jStat.factorial( n ) / jStat.factorial( n - m );
+			return f$.factorial( n ) / f$.factorial( n - m );
 		},
 
 		// beta function
 		betafn : function( x, y ) {
-			return jStat.gammafn( x ) * jStat.gammafn( y ) / jStat.gammafn( x + y );
+			return f$.gammafn( x ) * f$.gammafn( y ) / f$.gammafn( x + y );
 		},
 
 		// Returns the inverse incomplte gamma function
@@ -192,7 +192,7 @@ define(["formal/funct"],function() {
 			var j = 0,
 				a1 = a - 1,
 				EPS = 1e-8,
-				gln = jStat.gammaln( a ),
+				gln = f$.gammaln( a ),
 				x, err, t, u, pp, lna1, afac;
 
 			if( p >= 1 ) return Math.max( 100, a + 100 * Math.sqrt( a ) );
@@ -213,7 +213,7 @@ define(["formal/funct"],function() {
 
 			for( ; j < 12; j++ ) {
 				if( x <= 0 ) return 0;
-				err = jStat.gammap( x, a ) - p;
+				err = f$.gammap( x, a ) - p;
 				if( a > 1 ) t = afac * Math.exp( -( x - a1 ) + a1 * ( Math.log( x ) - lna1 ));
 				else t = Math.exp( -x + a1 * Math.log( x ) - gln );
 				u = err / t;
@@ -261,7 +261,7 @@ define(["formal/funct"],function() {
 
 		// Returns the complmentary error function erfc(x)
 		erfc : function( x ) {
-			return 1 - jStat.erf( x );
+			return 1 - f$.erf( x );
 		},
 
 		// Returns the inverse of the complementary error function
@@ -275,7 +275,7 @@ define(["formal/funct"],function() {
 			t = Math.sqrt( -2 * Math.log( pp / 2 ));
 			x = -0.70711 * (( 2.30753 + t * 0.27061 ) / ( 1 + t * ( 0.99229 + t * 0.04481)) - t );
 			for( ; j < 2; j++ ) {
-				err = jStat.erfc( x ) - pp;
+				err = f$.erfc( x ) - pp;
 				x += err / ( 1.12837916709551257 * Math.exp( -x * x ) - x * err );
 			}
 			return ( p < 1 ) ? x : -x;
@@ -309,10 +309,10 @@ define(["formal/funct"],function() {
 				if( p < t / w) x = Math.pow( a * w * p, 1 / a );
 				else x = 1 - Math.pow( b * w * ( 1 - p ), 1 / b );
 			}
-			afac = -jStat.gammaln( a ) - jStat.gammaln( b ) + jStat.gammaln( a + b );
+			afac = -f$.gammaln( a ) - f$.gammaln( b ) + f$.gammaln( a + b );
 			for( ; j < 10; j++ ) {
 				if( x === 0 || x === 1) return x;
-				err = jStat.incompleteBeta( x, a, b ) - p;
+				err = f$.incompleteBeta( x, a, b ) - p;
 				t = Math.exp( a1 * Math.log( x ) + b1 * Math.log( 1 - x ) + afac );
 				u = err / t;
 				x -= ( t = u / ( 1 - 0.5 * Math.min( 1, u * ( a1 / x - b1 / ( 1 - x )))));
@@ -327,8 +327,8 @@ define(["formal/funct"],function() {
 		incompleteBeta : function( x, a, b ) {
 			// Factors in front of the continued fraction.
 			var bt = ( x === 0 || x === 1 ) ?  0 :
-				Math.exp(jStat.gammaln( a + b ) - jStat.gammaln( a ) -
-				jStat.gammaln( b ) + a * Math.log( x ) + b *
+				Math.exp(f$.gammaln( a + b ) - f$.gammaln( a ) -
+				f$.gammaln( b ) + a * Math.log( x ) + b *
 				Math.log( 1 - x ));
 
 			if( x < 0 || x > 1 ) return false;
@@ -340,14 +340,14 @@ define(["formal/funct"],function() {
 		},
 
 		// Returns a normal deviate (mu=0, sigma=1).
-		// If n and m are specified it returns a jstat object of normal deviates.
+		// If n and m are specified it returns a f$ object of normal deviates.
 		randn : function( n, m ) {
 			var u, v, x, y, q, mat;
 			if ( !m ) m = n;
 
 			if( n ) {
-				mat = jStat.zeros( n, m );
-				mat.alter(function() { return jStat.randn(); });
+				mat = f$.zeros( n, m );
+				mat.alter(function() { return f$.randn(); });
 				return mat;
 			}
 			do {
@@ -368,8 +368,8 @@ define(["formal/funct"],function() {
 			if ( !shape ) shape = 1;
 
 			if( n ) {
-				mat = jStat.zeros( n,m );
-				mat.alter(function() { return jStat.randg( shape ); });
+				mat = f$.zeros( n,m );
+				mat.alter(function() { return f$.randg( shape ); });
 				return mat;
 			}
 			if( shape < 1 ) shape += 1;
@@ -377,7 +377,7 @@ define(["formal/funct"],function() {
 			a2 = 1 / Math.sqrt( 9 * a1 );
 			do {
 				do {
-					x = jStat.randn();
+					x = f$.randn();
 					v = 1 + a2 * x;
 				} while( v <= 0 );
 				v = v * v * v;
@@ -390,7 +390,7 @@ define(["formal/funct"],function() {
 			do { u = Math.random(); } while( u === 0 );
 			return Math.pow( u, 1 / oalph ) * a1 * v;
 		}
-	}
+	});
 	
 	return sylv.Functs;
 });

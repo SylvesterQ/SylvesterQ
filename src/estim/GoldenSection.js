@@ -3,18 +3,18 @@
 // Licensed under the MIT License
 
 /**
- * @fileoverview Classe d'implementation de la méthode Golden Section de recherche de minimal.
+ * @fileoverview Classe Golden Section, found the minimal.
  *
  *
  */
 
 define(["sylv"],function(sylv) {
 	/**
-	 * Class to generate Gaussian random number
+	 * 
 	 *
-	 * @param {integer} nombre d'individus
-	 * @param {array[integer]} date des resiliation ordonné par ordre decroissant
-	 * @param {array[integer]} date des morts ordonné par ordre decroissant
+	 * @param {float} 
+	 * @param {float}
+	 * @param {function}
 	 * @constructor
 	 */
 	sylv.GoldenSection = function(x0, x1, fct) {
