@@ -60,7 +60,7 @@ function keyInputShortCut(inst, e) {
 
 function plot(vals, optIfNotMatrix) {
 	$("#consoleOut"+$p.nb).before('<div id="consoleOut'+(++$p.nb)+'" style="width:'+windowWidth+'px;height:300px;"></div>');
-	jStat.flot("#consoleOut"+$p.nb, vals, optIfNotMatrix);
+	sylv.flot("#consoleOut"+$p.nb, vals, optIfNotMatrix);
 	return ""
 };
 
