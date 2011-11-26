@@ -16,7 +16,7 @@ define(["formal/funct"],function() {
 	 * @param {*} second
 	 * @constructor
 	 */
-	sylv.Funct.Creat(
+	sylv.Funct.creat(
 		"Add",
 		function(x,y) {
 			var X = (x instanceof sylv.Funct)?x.calc():x;
@@ -33,7 +33,7 @@ define(["formal/funct"],function() {
 	 * @param {*} second
 	 * @constructor
 	 */
-	sylv.Funct.Creat(
+	sylv.Funct.creat(
 		"Multi",
 		function(x,y) {
 			var X = (x instanceof sylv.Funct)?x.calc():x;

@@ -34,31 +34,34 @@ define(["sylv", "tree/tree"],function(sylv) {
 		}
 	});
 	
-	sylv.extend(sylv.Funct, {
-		extend: function(methodes) {
-			for(var mth in methodes) {
-				sylv.Funct.Creat(mth, methodes[mth]);
-			}
-		}
-	}, true);
-	
 	sylv.Functs = {};
 	f$ = Math;
 	
-	/**
-	 * Help to create new formal function
-	 *
-	 * @param {String} name of the new function
-	 * @param {Function} factors
-	 * @constructor
-	 */
-	 
-	sylv.Funct.Creat = function(name, value, operators) {
-		sylv.Functs[name] = new sylv.Funct(value);
-		sylv.Functs[name].operators = operators;
-		sylv.Functs[name].name = name;
-		f$[name] = value;
-	};
+	sylv.extend(sylv.Funct, {
+		/**
+		 * Help to create new formal function
+		 *
+		 * @param {String} name of the new function
+		 * @param {Function} factors
+		 * @constructor
+		 */
+		creat: function(name, value, operators) {
+			sylv.Functs[name] = new sylv.Funct(value);
+			sylv.Functs[name].operators = operators;
+			sylv.Functs[name].name = name;
+			f$[name] = value;
+		},
+		
+		extend: function(methodes) {
+			for(var mth in methodes) {
+				if (typeof(methodes[mth]) == "function") {
+					sylv.Funct.creat(mth, methodes[mth]);
+				} else {
+					sylv.Funct.creat(mth, methodes[mth][mth], methodes[mth]);
+				};
+			}
+		}
+	}, true);
 	
 	return sylv.Funct;
 });

@@ -3,7 +3,7 @@ Copyright 2011 Florian Pons (florian.pons.tv). All Rights Reserved.
 
 Licensed under the MIT License
 -->
-<html>
+<html manifest="index.manifest">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, height=device-height">
@@ -23,17 +23,24 @@ Licensed under the MIT License
 	<h1><a href="http://sites.google.com/site/sylvesteractuaire/">SylvesterQ</a></h1>
 	<br/>
 	<select name="inputMode" id="inputMode">
-		<option>Standard</option>
-		<option>Formal</option>
+		<option value="Standard">Standard</option>
+		<option value="Formal">Formal</option>
+		<option value="Mode">Basic Input Mode</option>
 	</select>
-	<button type="button" onclick="javascript: execute()">
-		execute
+	<button type="button" onclick="javascript: historyUp()">
+		up
+	</button>
+	<button type="button" onclick="javascript: historyDown()">
+		down
+	</button>
+	<button type="button" onclick="javascript: historyNavAll()">
+		history
 	</button>
 	<button type="button" onclick="javascript: exportAll()">
 		export
 	</button>
-	<button type="button" onclick="javascript: historyNavAll()">
-		history
+	<button type="button" onclick="javascript: execute()">
+		execute
 	</button>
 	<textarea name="consoleIn" id="consoleIn" rows="10"></textarea>
 	<br/>
