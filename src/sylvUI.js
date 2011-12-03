@@ -29,7 +29,7 @@ function execute() {
 	} catch(e) {
 		$p("<span style='color:red'>"+e+"</span>");
 	};
-	keyInputShortCut.mode[keyInputShortCut.buff.length-1]=$("#inputMode").index();
+	keyInputShortCut.mode[keyInputShortCut.buff.length-1]=$("#inputMode").val();
 	keyInputShortCut.buff[keyInputShortCut.buff.length-1]=consoleIn.getValue();
 	consoleIn.setValue("");
 	keyInputShortCut.buff.push("");
@@ -39,12 +39,13 @@ function execute() {
 // navigate forward in the history
 function historyUp() {
 	if(keyInputShortCut.pos==keyInputShortCut.buff.length-1) {
-		keyInputShortCut.mode[keyInputShortCut.pos]=$("#inputMode").index();
+		keyInputShortCut.mode[keyInputShortCut.pos]=$("#inputMode").val();
 		keyInputShortCut.buff[keyInputShortCut.pos]=consoleIn.getValue();
 	}
 	keyInputShortCut.pos--;
 	if(keyInputShortCut.pos<0) keyInputShortCut.pos=0;
 	consoleIn.setValue(keyInputShortCut.buff[keyInputShortCut.pos]);
+	$("#inputMode").val(keyInputShortCut.mode[keyInputShortCut.pos]);
 };
 
 // navigate back in the history
@@ -52,6 +53,7 @@ function historyDown() {
 	keyInputShortCut.pos++;
 	if(keyInputShortCut.pos>keyInputShortCut.buff.length-1) keyInputShortCut.pos=keyInputShortCut.buff.length-1;
 	consoleIn.setValue(keyInputShortCut.buff[keyInputShortCut.pos]);
+	$("#inputMode").val(keyInputShortCut.mode[keyInputShortCut.pos]);
 };
 
 function keyInputShortCut(inst, e) {
