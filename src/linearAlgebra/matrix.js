@@ -36,26 +36,58 @@ define(["sylv"], function() {
 	
 	sylv.matrix = function(args) {
 		// if first argument is an array, must be vector or matrix
-		if ( isArray( args ) || args instanceof sylv.matrix) {
-			if ( isArray( args[0] )) {
-				for ( var i = 0; i < args.length; i++ ) {
-					this[i] = args[i];
-				}
-				this.length = args.length;
-			} else {
-				this[0] = args;
-				this.length = 1;
-			}
-		} else if ( args.length == 1 ) {
-			this[0] = [args];
-			this.length = 1;
-		}
-		return this;
+		// if ( isArray( args ) || args instanceof sylv.matrix) {
+			// if ( isArray( args[0] )) {
+				// for ( var i = 0; i < args.length; i++ ) {
+					// this[i] = args[i];
+				// }
+				// this.length = args.length;
+			// } else {
+				// this[0] = args;
+				// this.length = 1;
+			// }
+		// }
+		if(!(args instanceof sylv.matrix)) {
+			var proto = args.__proto__
+			while (proto.__proto__.__proto__) proto = proto.__proto__
+			proto.__proto__ = this
+		};
+		args.toString = this.toString
+		return args;
 	};
 	
-	m$ = function(args) {return new sylv.matrix(args)};
+	// util function to help to create matrix
+	m$ = function(args, rows, cols) {
+		if(rows && cols) { // assume args is function
+			return sylv.matrix.create( rows, cols, args)
+		} else { // assume args is array
+			return new sylv.matrix(args)
+		}
+	};
 	
-	sylv.extend(sylv.matrix, {
+	sylv.extend(m$, {
+		// generate a rows x cols matrix according to the supplied function
+		create : function ( rows, cols, func ) {
+			var res = new sylv.matrix(), i, j;
+			for( i = 0; i < rows; i++ ) {
+				res[i]  = [];
+				for( j = 0; j < cols; j++ ) {
+					res[i].push( func( i, j ));
+				}
+			}
+			//res.length = rows - 1;
+			return res;
+		},
+		
+		fromCSV: function(txt) {
+			var data = txt.split(/\n/g);
+			for (var i = 0; i < data.length; i++) {
+			  data[i] = data[i].split(/,/g);
+			  data[i] = data[i].map(parseFloat);
+			};
+			return m$(data);
+		},
+		
 		// generate a rows x cols matrix of zeros
 		zeros : function( rows, cols ) {
 			return sylv.matrix.create( rows, cols, function() { return 0; });
@@ -76,28 +108,79 @@ define(["sylv"], function() {
 			if(!cols) cols = rows;
 			return sylv.matrix.create( rows, cols, function( i, j ) { return ( i === j ) ? 1 : 0; });
 		},
-
+		
+		// map a function to an array or array of arrays
+		map : function( arr, func, toAlter ) {
+			if ( !isArray( arr[0] )) arr = [ arr ];
+			var row = 0,
+				nrow = arr.length,
+				ncol = arr[0].length,
+				res = toAlter ? arr : [],
+				col;
+			for ( ; row < nrow; row++ ) {
+				if ( !res[row] ) res[row] = [];
+				for ( col = 0; col < ncol; col++ )
+					res[row][col] = func( arr[row][col], row, col );
+			}
+			return res.length === 1 ? res[0] : res;
+		},
+		
+		// Returns the dot product of two matricies
+		dot : function( arr, arg ) {
+			if ( !isArray( arr )) arr = [ arr ];
+			if ( !isArray( arg )) arg = [ arg ];
+				// convert column to row vector
+			var left = ( arr[0].length === 1 && arr.length !== 1 ) ? sylv.matrix.transpose( arr ) : arr,
+				right = ( arg[0].length === 1 && arg.length !== 1 ) ? sylv.matrix.transpose( arg ) : arg,
+				res = [],
+				row = 0,
+				nrow = left.length,
+				ncol = left[0].length,
+				sum, col;
+			for( ; row < nrow; row++ ) {
+				res[row] = [];
+				sum = 0;
+				for( col = 0; col < ncol; col++ )
+					sum += left[row][col] * right[row][col];
+				res[row] = sum;
+			}
+			return ( res.length === 1 ) ? res[0] : res;
+		},
+		
 		// generate sequence
-		seq : function( min, max, length, func ) {
+		seq : function( min, max, step, func ) {
 			var arr = [],
-				hival = calcRdx( min, max ),
-				step = ( max * hival - min * hival ) / (( length - 1 ) * hival ),
+				step = step ? step : 1,
 				current = min,
 				cnt = 0;
 			// current is assigned using a technique to compensate for IEEE error
-			for ( ; current <= max; cnt++, current = ( min * hival + step * hival * cnt ) / hival )
+			for ( ; current <= max; cnt++, current += step )
 				arr.push(( func ? func( current ) : current ));
-			return arr;
+			return new sylv.matrix(arr);
 		}
 	}, true);
 	
 	sylv.extend(sylv.matrix, {
 		length : 0,
+
+		toCSV: function() {
+			var txt = '';
+			for (var i = 0; i < this.getSize().height; i++) {
+				txt += '\n';
+			}
+			return txt;
+		},
 		
 		toString: function() {
-			var res = "[[";
-			res = res+this.toArray().join("],\n[");
-			res = res+"]]";
+			var res = "[";
+			if(isArray(this[0])) {
+				res += "[";
+				res += this.join("],\n[");
+				res += "]]";
+			} else {
+				res += this.join(",");
+				res += "]";
+			}
 			return res;
 		},
 		
@@ -153,90 +236,50 @@ define(["sylv"], function() {
 			for( ; nrow >= 0; nrow--, i++ ) {
 				res[i] = [ this[i][nrow] ];
 			}
-			return sylv.matrix( res );
+			return new sylv.matrix( res );
 		},
 
 		// map a function to a matrix or vector
 		map : function( func, toAlter ) {
-			return sylv.matrix( sylv.matrix.map( this, func, toAlter ));
-		},
-
-		// destructively alter an array
-		alter : function( func ) {
-			sylv.matrix.alter( this, func );
-			return this;
+			return m$.map( this, func, toAlter );
 		},
 		
 		// transpose a matrix or array
-		transpose : function( arr ) {
-			if ( !isArray( arr[0] )) arr = [ arr ];
-			var rows = arr.length,
-				cols = arr[0].length,
+		transpose : function() {
+			var rows = this.length,
+				cols = this[0].length,
 				obj = [],
 				i = 0, j;
 			for ( ; i < cols; i++ ) {
 				obj.push([]);
 				for ( j = 0; j < rows; j++ ) {
-					obj[i].push( arr[j][i] );
+					obj[i].push( this[j][i] );
 				}
 			}
 			return obj;
 		},
 
-		// map a function to an array or array of arrays
-		map : function( arr, func, toAlter ) {
-			if ( !isArray( arr[0] )) arr = [ arr ];
-			var row = 0,
-				nrow = arr.length,
-				ncol = arr[0].length,
-				res = toAlter ? arr : [],
-				col;
-			for ( ; row < nrow; row++ ) {
-				if ( !res[row] ) res[row] = [];
-				for ( col = 0; col < ncol; col++ )
-					res[row][col] = func( arr[row][col], row, col );
-			}
-			return res.length === 1 ? res[0] : res;
-		},
-
-		// destructively alter an array
-		alter : function( arr, func ) {
-			return sylv.matrix.map( arr, func, true );
-		},
-
-		// generate a rows x cols matrix according to the supplied function
-		create : function ( rows, cols, func ) {
-			var res = [], i, j;
-			for( i = 0; i < rows; i++ ) {
-				res[i]  = [];
-				for( j = 0; j < cols; j++ ) {
-					res[i].push( func( i, j ));
-				}
-			}
-			return res;
-		},
-
 		// add a vector or scalar to the vector
-		add : function( arr, arg ) {
+		add : function( arg ) {
 			// check if arg is a vector or scalar
 			return isNaN( arg ) ?
-				sylv.matrix.map( arr, function( value, row, col ) { return value + arg[row][col]; })
-			: sylv.matrix.map( arr, function ( value ) { return value + arg; });
+				sylv.matrix.map( this, function( value, row, col ) { return value + arg[row][col]; })
+			: sylv.matrix.map( this, function ( value ) { return value + arg; });
 		},
 
 		// TODO: Implement matrix division
 		// matrix division
-		divide : function( arr, arg ) {
+		divide : function( arg ) {
 			return isNaN( arg ) ?
 				false
-			: sylv.matrix.map(arr, function ( value ) { return value / arg; });
+			: sylv.matrix.map(this, function ( value ) { return value / arg; });
 		},
 
 		// matrix multiplication
-		x : function( arr, arg ) {
+		x : function( arg ) {
 			var row, col, nrescols, sum,
-				nrow = arr.length,
-				ncol = arr[0].length,
+				nrow = this.length,
+				ncol = this[0].length,
 				res = sylv.matrix.zeros( nrow, nrescols = ( isNaN( arg )) ? arg[0].length : ncol ),
 				rescols = 0;
 			if( isNaN( arg )) {
@@ -244,71 +287,49 @@ define(["sylv"], function() {
 					for( row = 0; row < nrow; row++ ) {
 						sum = 0;
 						for( col = 0; col < ncol; col++ )
-							sum += arr[row][col] * arg[col][rescols];
+							sum += this[row][col] * arg[col][rescols];
 						res[row][rescols] = sum;
 					}
 				}
 				return ( nrow === 1 && rescols === 1 ) ? res[0][0] : res;
 			}
-			return sylv.matrix.map( arr, function( value ) { return value * arg; });
+			return sylv.matrix.map( this, function( value ) { return value * arg; });
 		},
 
 		// subtract a vector or scalar from the vector
-		subtract : function( arr, arg ) {
+		subtract : function( arg ) {
 			var res;
 			if( isNaN( arg ) ) {
 				if( isNaN( arg[0] ) ) {
-					res = sylv.matrix.map( arr, function( value, row, col ) { return value - arg[row][col]?arg[row][col]:0; });
+					res = sylv.matrix.map( this, function( value, row, col ) { return value - arg[row][col]?arg[row][col]:0; });
 				} else {
-					res = sylv.matrix.map( arr, function( value, row, col ) { return value - arg[col]?arg[col]:0; });
+					res = sylv.matrix.map( this, function( value, row, col ) { return value - arg[col]?arg[col]:0; });
 				};
 			} else {
-				res = sylv.matrix.map( arr, function( value ) { return value - arg; });
+				res = sylv.matrix.map( this, function( value ) { return value - arg; });
 			};
 			return res
 		},
 
-		// Returns the dot product of two matricies
-		dot : function( arr, arg ) {
-			if ( !isArray( arr )) arr = [ arr ];
-			if ( !isArray( arg )) arg = [ arg ];
-				// convert column to row vector
-			var left = ( arr[0].length === 1 && arr.length !== 1 ) ? sylv.matrix.transpose( arr ) : arr,
-				right = ( arg[0].length === 1 && arg.length !== 1 ) ? sylv.matrix.transpose( arg ) : arg,
-				res = [],
-				row = 0,
-				nrow = left.length,
-				ncol = left[0].length,
-				sum, col;
-			for( ; row < nrow; row++ ) {
-				res[row] = [];
-				sum = 0;
-				for( col = 0; col < ncol; col++ )
-					sum += left[row][col] * right[row][col];
-				res[row] = sum;
-			}
-			return ( res.length === 1 ) ? res[0] : res;
-		},
-
 		// raise every element by a scalar or vector
-		pow : function( arr, arg ) {
-			return sylv.matrix.map( arr, function( value ) { return Math.pow( value, arg ); });
+		pow : function( arg ) {
+			return sylv.matrix.map( this, function( value ) { return Math.pow( value, arg ); });
 		},
 
 		// generate the absolute values of the vector
-		abs : function( arr ) {
-			return sylv.matrix.map( arr, function( value ) { return Math.abs( value ); });
+		abs : function( ) {
+			return sylv.matrix.map( this, function( value ) { return Math.abs( value ); });
 		},
 
 		// set all values to zero
-		clear : function( arr ) {
-			return sylv.matrix.alter( arr, function() { return 0; });
+		clear : function( ) {
+			return sylv.matrix.alter( this, function() { return 0; });
 		},
 
 		// BUG: Does not work for matrices
 		// computes the norm of the vector
-		norm : function( arr ) {
-			arr = isArray( arr[0] ) ? arr : [arr];
+		norm : function( ) {
+			arr = isArray( this[0] ) ? this : [this];
 			if( arr.length > 1 && arr[0].length > 1 ) {
 				// matrix norm
 				return false;
@@ -319,19 +340,19 @@ define(["sylv"], function() {
 
 		// BUG: Does not work for matrices
 		// computes the angle between two vectors
-		angle : function( arr, arg ) {
-			 return Math.acos( sylv.matrix.dot( arr, arg ) / ( sylv.matrix.norm( arr ) * sylv.matrix.norm( arg )));
+		angle : function( arg ) {
+			 return Math.acos( sylv.matrix.dot( this, arg ) / ( this.norm( ) * arg.norm( )));
 		},
 
 		// Tests whether a matrix is symmetric
-		symmetric : function( arr ) {
+		symmetric : function( ) {
 			var issymmetric = true,
 				row = 0,
-				size = arr.length, col;
-			if( arr.length !== arr[0].length ) return false;
+				size = this.length, col;
+			if( this.length !== this[0].length ) return false;
 			for ( ; row < size; row++ ) {
 				for ( col = 0; col < size; col++ ) {
-					if ( arr[col][row] !== arr[row][col] ) return false;
+					if ( this[col][row] !== this[row][col] ) return false;
 				}
 			}
 			return true;
@@ -340,10 +361,10 @@ define(["sylv"], function() {
 		/* array/vector specific methods */
 
 		// sum of an array
-		sum : function( arr ) {
+		sum : function( ) {
 			var sum = 0,
-				i = arr.length;
-			while( --i >= 0 ) sum += arr[i];
+				i = this.length;
+			while( --i >= 0 ) sum += this[i];
 			return sum;
 		},
 
