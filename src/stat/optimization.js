@@ -376,37 +376,3 @@ jStat.elicitate = function( inputs, opt_method, options) {
 };
 
 
-
-(function( vals ) {
-	for ( var i = 0; i < vals.length; i++ ) (function( item ) {
-		jStat.fnc.prototype[ item ] = function( x ) {
-			return jStat.fnc[ item ]( x, this );
-		};
-	})( vals[ i ]);
-})( 'value gradf'.split( ' ' ));
-
-(function( vals ) {
-	for ( var item in vals ) (function( item ) {
-		jStat.cost.prototype[ item ] = function( x ) {
-			return jStat.cost[ item ]( x,this);
-		};
-	})( vals[ item ]);
-})( 'value gradf'.split( ' ' ));
-
-(function( vals ) {
-	for ( var item in vals ) (function( item ) {
-		jStat.optim.prototype[ item ] = function( x , y) {
-			return jStat.optim[ item ]( x, y, this);
-		};
-	})( vals[ item ]);
-})( 'amotry'.split( ' ' ));
-
-(function( vals ) {
-	for ( var item in vals ) (function( item ) {
-		jStat.optim.prototype[ item ] = function() {
-			return jStat.optim[ item ]( this );
-		};
-	})( vals[ item ]);
-})( 'get_sum calculate'.split( ' ' ));
-
-
