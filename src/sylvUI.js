@@ -17,37 +17,52 @@ function historyNavAll() {
 };
 
 function execute() {
-	var cmd = document.getElementById("consoleIn");
 	$("#consoleOut"+$p.nb).before('<div id="consoleOut'+(++$p.nb)+'"></div>');
 	sylv.ui.print("<hr/>", false);
 	try {
 		// select the input mode
-		if($("#inputMode").val() == "Standard") {
-			$p(eval(consoleIn.getValue()));
-		} else {
+		if($("#inputMode").val() == "Formal") {
 			$p(sylv.Formal(consoleIn.getValue()));
+		} else {
+			$p(eval(consoleIn.getValue()));
 		};
 	} catch(e) {
 		$p("<span style='color:red'>"+e+"</span>");
 	};
+	keyInputShortCut.mode[keyInputShortCut.buff.length-1]=$("#inputMode").val();
 	keyInputShortCut.buff[keyInputShortCut.buff.length-1]=consoleIn.getValue();
 	consoleIn.setValue("");
 	keyInputShortCut.buff.push("");
 	keyInputShortCut.pos = keyInputShortCut.buff.length-1;
 };
 
+// navigate forward in the history
+function historyUp() {
+	if(keyInputShortCut.pos==keyInputShortCut.buff.length-1) {
+		keyInputShortCut.mode[keyInputShortCut.pos]=$("#inputMode").val();
+		keyInputShortCut.buff[keyInputShortCut.pos]=consoleIn.getValue();
+	}
+	keyInputShortCut.pos--;
+	if(keyInputShortCut.pos<0) keyInputShortCut.pos=0;
+	consoleIn.setValue(keyInputShortCut.buff[keyInputShortCut.pos]);
+	$("#inputMode").val(keyInputShortCut.mode[keyInputShortCut.pos]);
+};
+
+// navigate back in the history
+function historyDown() {
+	keyInputShortCut.pos++;
+	if(keyInputShortCut.pos>keyInputShortCut.buff.length-1) keyInputShortCut.pos=keyInputShortCut.buff.length-1;
+	consoleIn.setValue(keyInputShortCut.buff[keyInputShortCut.pos]);
+	$("#inputMode").val(keyInputShortCut.mode[keyInputShortCut.pos]);
+};
+
 function keyInputShortCut(inst, e) {
 	if(e.shiftKey && e.type=="keydown") switch(e.keyCode) {
 		case 38:
-			if(keyInputShortCut.pos==keyInputShortCut.buff.length-1) keyInputShortCut.buff[keyInputShortCut.pos]=consoleIn.getValue();
-			keyInputShortCut.pos--;
-			if(keyInputShortCut.pos<0) keyInputShortCut.pos=0;
-			consoleIn.setValue(keyInputShortCut.buff[keyInputShortCut.pos]);
+			historyUp();
 			break;
 		case 40:
-			keyInputShortCut.pos++;
-			if(keyInputShortCut.pos>keyInputShortCut.buff.length-1) keyInputShortCut.pos=keyInputShortCut.buff.length-1;
-			consoleIn.setValue(keyInputShortCut.buff[keyInputShortCut.pos]);
+			historyDown()
 			break;
 		case 13:
 			execute();
@@ -55,6 +70,33 @@ function keyInputShortCut(inst, e) {
 	};
 	if(e.shiftKey && e.keyCode==13) {
 		event.preventDefault();
+	};
+};
+
+function setCodeMirror() {
+	consoleIn = CodeMirror.fromTextArea(document.getElementById("consoleIn"), {
+		indentWithTabs: true,
+		mode:  "javascript",
+		matchBrackets: true,
+		onKeyEvent: keyInputShortCut,
+		theme: "default"
+	});
+};
+
+function onModeChange() {
+	if($("#inputMode").val() == "Mode") {
+		if($("#inputMode option")[2].text == "Basic Input Mode") {
+			consoleIn.toTextArea();
+			consoleIn = $("#consoleIn");
+			consoleIn.getValue = function() {return consoleIn.val()};
+			consoleIn.setValue = function(v) {return consoleIn.val(v)};
+			$("#inputMode option")[2].text = "Standard Input Mode";
+			$("#inputMode").val("Standard");
+		} else {
+			setCodeMirror();
+			$("#inputMode option")[2].text = "Basic Input Mode";
+			$("#inputMode").val("Standard");
+		};
 	};
 };
 
@@ -84,17 +126,13 @@ define(["stat/stat", "tree/tree", "data/data", "process/process", "estim/estim",
 
 	keyInputShortCut.pos = 0;
 	keyInputShortCut.buff = [""];
+	keyInputShortCut.mode = [$("#inputMode").index()];
 
 	$(window).resize(onResize);
+	$("#inputMode").change(onModeChange);
 
 	$(document).ready(function() {
-		consoleIn = CodeMirror.fromTextArea(document.getElementById("consoleIn"), {
-			indentWithTabs: true,
-			mode:  "javascript",
-			matchBrackets: true,
-			onKeyEvent: keyInputShortCut,
-			theme: "default"
-		});
+		setCodeMirror();
 		onResize();
 	});
 

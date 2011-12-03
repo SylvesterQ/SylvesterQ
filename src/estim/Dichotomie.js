@@ -26,7 +26,7 @@ define(["sylv", "estim/GoldenSection"],function(sylv) {
 			if (f0<0) gFct = function(x) {return fct(x)};
 			var gs = new sylv.GoldenSection(x0, x1, gFct);
 			var stop = 0;
-			while (gs.nextStep()>0 && stop++ < 1000);
+			while (gs.nextStep()>0) {if(stop++ < 1000) throw "sylv.Dichotomie: can't find values where fct(x0)*fct(x1)<0";};
 			x0 = gs.a
 			f0 = gs.fa
 		};

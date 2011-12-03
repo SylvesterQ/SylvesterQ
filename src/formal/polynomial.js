@@ -17,32 +17,30 @@ define(["formal/funct"],function() {
 	 */
 	sylv.Polynomial = function(arr) {
 		if(arr instanceof Array) {
-			res = arr;
+			this.val = arr;
 		} else {
-			res = [];
+			this.val = [];
 			for (var i=0; i<arguments.length; i++) {
-				res[i] = arguments[i];
+				this.val[i] = arguments[i];
 			}
 		};
-		res.__proto__.__proto__ = sylv.Polynomial.prototype;
-		return res;
 	};
 	
-	sylv.extend("sylv.Polynomial", {
+	p$ = sylv.Polynomial;
+	
+	sylv.extend(sylv.Polynomial, {
 		// Calculate the next step and return the value of the function at the new point.
-		eval: function(val) {
-			res = this[0];
-			var x = 1;
+		eval: function(X) {
+			var res = this.val[0];
 			if(typeof(val)=="object" && "x" in val) {
-				res = val.identity().x(res);
-				for (var i=1; i<this.length; i++) {
-					x = val.x(x);
-					res = x.x(this[i]).add(res);
+				for (var l=1; l<this.val.length; l++) {
+					res = X.x(res);
+					res = res.add(this.val[l]);
 				}
 			} else {
-				for (var i=1; i<this.length; i++) {
-					x *= val;
-					res += x*this[i];
+				for (var l=1; l<this.val.length; l++) {
+					res *= X;
+					res += this.val[l];
 				}
 			}
 			return res;
