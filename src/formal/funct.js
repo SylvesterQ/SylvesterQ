@@ -22,7 +22,7 @@ define(["sylv", "tree/tree"],function(sylv) {
 			this.name = tmpVal.name;
 		} else {
 			// the default function is constant
-			this.value = val;
+			this.value = typeof(val)=="string"?eval(val):val;
 			this.val = function() {return this.value};
 		};
 	};
