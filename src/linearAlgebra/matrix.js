@@ -34,41 +34,21 @@ define(["sylv"], function() {
 		return Math.pow( 10, 15 - ~~( Math.log((( val > 0 ) ? val : -val )) * Math.LOG10E ));
 	};
 	
-	sylv.matrix = function(args) {
-		// if first argument is an array, must be vector or matrix
-		// if ( isArray( args ) || args instanceof sylv.matrix) {
-			// if ( isArray( args[0] )) {
-				// for ( var i = 0; i < args.length; i++ ) {
-					// this[i] = args[i];
-				// }
-				// this.length = args.length;
-			// } else {
-				// this[0] = args;
-				// this.length = 1;
-			// }
-		// }
-		if(!(args instanceof sylv.matrix)) {
-			var proto = args.__proto__
-			while (proto.__proto__.__proto__) proto = proto.__proto__
-			proto.__proto__ = this
-		};
-		args.toString = this.toString
-		return args;
-	};
-	
 	// util function to help to create matrix
-	m$ = function(args, rows, cols) {
+	sylv.matrix = function(args, rows, cols) {
 		if(rows && cols) { // assume args is function
-			return sylv.matrix.create( rows, cols, args)
+			return m$.create( rows, cols, args)
 		} else { // assume args is array
-			return new sylv.matrix(args)
+			return args
 		}
 	};
+	
+	m$ = sylv.matrix
 	
 	sylv.extend(m$, {
 		// generate a rows x cols matrix according to the supplied function
 		create : function ( rows, cols, func ) {
-			var res = new sylv.matrix(), i, j;
+			var res = new Array(), i, j;
 			for( i = 0; i < rows; i++ ) {
 				res[i]  = [];
 				for( j = 0; j < cols; j++ ) {
@@ -156,11 +136,11 @@ define(["sylv"], function() {
 			// current is assigned using a technique to compensate for IEEE error
 			for ( ; current <= max; cnt++, current += step )
 				arr.push(( func ? func( current ) : current ));
-			return new sylv.matrix(arr);
+			return new Array(arr);
 		}
 	}, true);
 	
-	sylv.extend(sylv.matrix, {
+	sylv.extend(Array, {
 		length : 0,
 
 		toCSV: function() {
@@ -236,7 +216,7 @@ define(["sylv"], function() {
 			for( ; nrow >= 0; nrow--, i++ ) {
 				res[i] = [ this[i][nrow] ];
 			}
-			return new sylv.matrix( res );
+			return new Array( res );
 		},
 
 		// map a function to a matrix or vector

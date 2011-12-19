@@ -13,19 +13,14 @@ define(function() {
 	sylv = {};
 
 	sylv.loadFile = function(name) {
-		if(sylv.loadFile.path==undefined) {
-			var scripts = document.getElementsByTagName('script');
-			for (var i = 0, ln = scripts.length; i < ln; i++) {
-				var scriptSrc = scripts[i].src;
-				var match = scriptSrc.match(/sylv\.js$/);
-				if (match) {
-					sylv.loadFile.path = scriptSrc.substring(0, scriptSrc.length - match[0].length);
-					break;
-				};
-			};
-		};
-		document.write('<script type="text/javascript" src="' + sylv.loadFile.path + name + '"></script>');
+		var text;
+		$.get(name, function(data) {text=data});
+		return text;
 	};
+	
+	sylv.load = function(mod) {
+		requirejs(mod + "/" + mod);
+	}
 
 	sylv.extend = function(obj, methodes, forceStatic) {
 		if(forceStatic) {
