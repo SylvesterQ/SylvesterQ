@@ -16,17 +16,20 @@ define(["formal/funct"],function() {
 	 * @constructor
 	 */
 	sylv.Polynomial = function(arr) {
-		if(arr instanceof Array) {
-			this.val = arr;
-		} else {
-			this.val = [];
-			for (var i=0; i<arguments.length; i++) {
-				this.val[i] = arguments[i];
-			}
-		};
+		this.val = arr;
 	};
 	
-	p$ = sylv.Polynomial;
+	p$ = function(arr) {
+		if(arr instanceof Array) {
+			return new sylv.Polynomial(arr);
+		} else {
+			var val = [];
+			for (var i=0; i<arguments.length; i++) {
+				val[i] = arguments[i];
+			}
+			return new sylv.Polynomial(val);
+		};
+	};
 	
 	sylv.extend(sylv.Polynomial, {
 		// Calculate the next step and return the value of the function at the new point.
