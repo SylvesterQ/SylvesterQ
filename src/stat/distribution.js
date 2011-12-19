@@ -592,6 +592,27 @@ jStat.extend( jStat.poisson, {
 			sum += jStat.poisson( k, l );
 		}
 		return sum;
+	},
+
+	mean : function( l ) {
+		return l;
+	},
+
+	mode : function( l ) {
+		return Math.ceil(l) - 1;
+	},
+
+	variance : function( l ) {
+		return l;
+	},
+
+	sample : function( l ) {
+		var p = 1, k = 0, L = Math.exp(-l);
+		do {
+			k++;
+			p *= Math.random();
+		} while (p > L);
+		return k - 1;
 	}
 });
 
